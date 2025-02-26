@@ -1,6 +1,10 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const userAuth = require('./routes/userAuth');
+const reserveSpace = require('./routes/reserveSpace');
+const searchSpaces = require('./routes/searchSpaces');
+const spaceAvailability = require('./routes/spaceAvailability');
+const spacesAdmin = require('./routes/spacesAdmin');
 const dotenv = require('dotenv');
 
 //carga los valores en .env a process.env
@@ -15,6 +19,10 @@ app.use(express.static('public'));
 
 //respuestas 
 app.use('/auth/login', userAuth);
+app.use('/reservations', reserveSpace);
+app.use('/spaces/search', searchSpaces);
+app.use('/spaces/availability', spaceAvailability);
+app.use('/spaces', spacesAdmin);
 
 //port especificado en el .env
 const PORT = process.env.PORT;

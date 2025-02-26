@@ -2,42 +2,50 @@ const express = require('express');
 const router = express.Router();
 // inicio de metodo de autenticación
 
-// Define a simple route to get user information
+/* BODY ideal de la request
+{
+    "email": "cualquiera@gmail.com",
+    "password": "abc123-"
+}
+*/
 router.post('/', (req, res) => {
     //variables de interes en el body
-    [ email, password ] = [req.body["email"], req.body["password"]];
-
+    const { email, password } = req.body;
     //checkeo de las variables
-    undef_email = typeof email !== "string";
-    undef_pswd = typeof password !== "string";
-    if (undef_email || undef_pswd) {
-        msg = "";
-        if (undef_email && undef_pswd) msg = "Email and pasword missing";
-        else msg = undef_email?"Email missing":"Pasword missing";
+    if (typeof email == "undefined" || typeof password == "undefined") {
         res.status(400).json({ //respuesta 400
-            "msg": msg,
-            "missing": {
-                "email": undef_email,
-                "password": undef_pswd
-            }
+            "status":"Bad request",
+            "message": "Email or password missing"
         });
         return; // terminar función
     }
 
     // TODO: verificacion contra la base de datos
 
-    
+    /* Respuesta teórica equivocada
+    if (!valid) {
+        res.status(401).json({
+            "status": "Unauthorized",
+            "message": "Incorrect email or pasword"
+        });
+        return;
+    }
+    */
     // TODO: responder token, rol y tiempo de expiracion correctos
-
+    /*
     res.status(200).json({
         "status": "success",
         "data": {
-            "token": 1234,
-            "role": "user",
-            "expires_in": 1200
+            "token": token,
+            "role": role,
+            "expires_in": time
         }
     });
+    */
+
+   //temporalmente
+   res.status(501).send();
 });
 
-// Export the router to be used in app.js
+// exporta el router a app.js
 module.exports = router;
