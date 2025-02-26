@@ -3,6 +3,9 @@
 # Created by https://www.toptal.com/developers/gitignore/api/visualstudiocode,react
 # Edit at https://www.toptal.com/developers/gitignore?templates=visualstudiocode,react
 
+# credenciales
+*.env
+
 ### react ###
 .DS_*
 *.log
