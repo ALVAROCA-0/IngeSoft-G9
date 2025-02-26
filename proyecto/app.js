@@ -1,21 +1,27 @@
 const express = require('express');
 const bodyParser = require('body-parser');
-const userRoutes = require('./routes/userRoutes');
+const userAuth = require('./routes/userAuth');
+const dotenv = require('dotenv');
 
-// Inicializa la aplicación
+//carga los valores en .env a process.env
+dotenv.config();
+
+//inicializa la aplicación
 const app = express();
 
 app.use(bodyParser.json());
 
 app.use(express.static('public'));
 
+//respuestas 
+app.use('/auth/login', userAuth);
 
-app.use('/api/users', userRoutes);
+//port especificado en el .env
+const PORT = process.env.PORT;
 
-
-const PORT = process.env.PORT || 3000;
+//inicia el servidor
 app.listen(PORT, () => {
   console.log(`Servidor corriendo en el puerto ${PORT}`);
 });
 
-module.exports = app; // Para poder testear la app
+module.exports = app; //para poder testear la app

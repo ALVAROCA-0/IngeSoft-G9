@@ -1,5 +1,11 @@
 const admin = require('firebase-admin');
-const serviceAccount = require('C:\Users\pauli\Downloads\ingesoft-3dc65-firebase-adminsdk-fbsvc-62e340f0a0.json');
+const dotenv = require('dotenv');
+
+//carga los valores en .env a process.env
+dotenv.config();
+
+//obtiene la cuenta de firebase?
+const serviceAccount = require(process.env.FIREBASE_ACCOUNT);
 
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
