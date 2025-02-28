@@ -9,9 +9,9 @@ const serviceAccount = require(process.env.FIREBASE_ACCOUNT);
 
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
-  databaseURL: process.env.DATABASE_LINK
+    databaseURL: process.env.DATABASE_LINK
 });
 
 const firestore = admin.firestore();
 
-module.exports = { admin, firestore };
+module.exports = { admin, firestore };  

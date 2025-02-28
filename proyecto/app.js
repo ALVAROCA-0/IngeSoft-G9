@@ -5,6 +5,8 @@ const reserveSpace = require('./routes/reserveSpace');
 const searchSpaces = require('./routes/searchSpaces');
 const spaceAvailability = require('./routes/spaceAvailability');
 const spacesAdmin = require('./routes/spacesAdmin');
+const admin = require('firebase-admin');
+const createUser = require('./routes/CreateUser');
 const dotenv = require('dotenv');
 
 //carga los valores en .env a process.env
@@ -23,6 +25,7 @@ app.use('/reservations', reserveSpace);
 app.use('/spaces/search', searchSpaces);
 app.use('/spaces/availability', spaceAvailability);
 app.use('/spaces', spacesAdmin);
+app.use('/auth/create', createUser);
 
 //port especificado en el .env
 //const PORT = process.env.PORT;

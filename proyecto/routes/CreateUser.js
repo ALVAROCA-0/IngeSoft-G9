@@ -1,46 +1,50 @@
 const express = require('express');
 const router = express.Router();
+const { admin } = require('../config/firebase'); // Importar admin instance
+
 
 router.post('/', async (req, res) => {
-    // Extraer las variables del body
-    const { email, password, nombre } = req.body;
-  
-    // Validación de los campos requeridos
-    if (!email || !password || !nombre) {
-      return res.status(400).json({
-        status: "Bad request",
-        message: "Email, password or nombre missing"
-      });
+    const { email, password, nombre, rol } = req.body;
+
+    if (!email || !password || !nombre || !rol) {
+        return res.status(400).json({
+            status: "Bad request",
+            message: "Email, password, nombre, or rol missing"
+        });
     }
-  
+
     try {
-      // Crear el usuario en Firebase Authentication
-      const userRecord = await admin.auth().createUser({
-        email,
-        password,
-        displayName: nombre,
-      });
-  
-      // Guardar información adicional en Firestore
-      await firestore.collection('usuarios').doc(userRecord.uid).set({
-        nombre,
-        email
-      });
-  
-      // Responder con éxito
-      res.status(201).json({
-        status: "success",
-        message: "Usuario creado correctamente",
-        uid: userRecord.uid
-      });
+        // 1️⃣ Crear usuario en Firebase Authentication
+        const userRecord = await admin.auth().createUser({
+            email,
+            password,
+            displayName: nombre,
+        });
+
+
+        // 2️⃣ Guardar información en Firestore (usando el `uid` del usuario como ID del documento)
+        await db.collection('/users').doc(userRecord.uid).set({
+            name: nombre,
+            email: email,
+            rol: rol, // El rol lo tomamos del body del request
+            createdAt: admin.firestore.FieldValue.serverTimestamp()
+        });
+
+        res.status(201).json({
+            status: "success",
+            message: "Usuario creado correctamente en Authentication y Firestore",
+            userId: userRecord.uid,
+            rol: rol
+        });
+
     } catch (error) {
-      console.error("Error al crear usuario:", error);
-      res.status(500).json({
-        status: "error",
-        message: error.message
-      });
+        console.error("Error en Firebase:", error); // Imprime el error en consola
+        res.status(500).json({
+            status: "Internal Server Error",
+            message: error.toString() // Devuelve más detalles del error
+        });
     }
-  });
-  
-  // Exporta el router para usarlo en app.js
-  module.exports = router;
+});
+
+// Exportar el router para usarlo en app.js
+module.exports = router;
