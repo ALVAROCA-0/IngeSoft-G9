@@ -1,9 +1,9 @@
+require('dotenv').config();
 const express = require('express');
-const router = express.Router();
 const axios = require('axios');
-const { apiKey } = require('../config/firebase');
+const router = express.Router();
 
-// Endpoint para inicio de sesión con email y password
+// Endpoint para iniciar sesión con email y password
 router.post('/', async (req, res) => {
   const { email, password } = req.body;
   
@@ -15,17 +15,20 @@ router.post('/', async (req, res) => {
   }
   
   try {
-    // URL del endpoint REST para signInWithPassword
+    // Obtén la API key desde las variables de entorno
+    const apiKey = process.env.FIREBASE_API_KEY;
+    
+    // URL del endpoint REST para autenticación con Firebase
     const url = `https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=${apiKey}`;
     
-    // Realizar la petición a Firebase Auth
+    // Realiza la petición POST a Firebase Auth
     const response = await axios.post(url, {
       email,
       password,
       returnSecureToken: true
     });
     
-    // Responder con la información del usuario autenticado y los tokens
+    // Devuelve la respuesta con la información del token y demás
     res.status(200).json({
       status: "success",
       message: "Usuario autenticado correctamente",
