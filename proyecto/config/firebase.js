@@ -9,7 +9,7 @@ const serviceAccount = require(process.env.FIREBASE_ACCOUNT);
 
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
-  databaseURL: "https://ingesoft-3dc65.firebaseio.com"
+  databaseURL: process.env.DATABASE_LINK
 });
 
 const firestore = admin.firestore();
