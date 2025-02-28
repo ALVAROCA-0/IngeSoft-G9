@@ -5,7 +5,7 @@
 
 # credenciales
 *.env
-
+.env
 ### react ###
 .DS_*
 *.log

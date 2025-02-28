@@ -25,7 +25,9 @@ app.use('/spaces/availability', spaceAvailability);
 app.use('/spaces', spacesAdmin);
 
 //port especificado en el .env
-const PORT = process.env.PORT;
+//const PORT = process.env.PORT;
+
+const PORT = 3000;
 
 //inicia el servidor
 app.listen(PORT, () => {
