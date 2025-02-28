@@ -1,8 +1,17 @@
 const express = require('express');
 const router = express.Router();
 
-router.get("/:id", (req, res) => { // Corrected order of parameters
+router.get("/:id", (res,req) => {
     const spaceId = req.params.id;
+    
+    //verificacion de variables obligatorias
+    if (typeof spaceId !== "number") {
+        res.status(400).json({ //respuesta 400
+            "status":"Bad request",
+            "message": "Space id missing"
+        });
+        return; // terminar función
+    }
 
     //TODO: conexion con bd
     /* respuesta cuando bd no responde

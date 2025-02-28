@@ -1,5 +1,6 @@
 const express = require('express');
 const router = express.Router();
+const { admin } = require('../config/firebase'); // Import admin instance
 
 /*
 En este archivo vienen los tres metodos para gestionar espacios.
@@ -24,25 +25,28 @@ router.post("/", (req,res) => {
         return; // terminar función
     }
 
-    //TODO: conexion con bd
-    /* respuesta cuando bd no responde
-    res.status(500).json(
-        "status": "Internal Server Error",
-        "message": "Can't connect to database"
-    );
-    return;
-    */
+    var upload = {
+        "name":name,
+        "capacity":capacity,
+        "location":location
+    }
+    if (equipment) upload.equipment = equipment;
+    if (description) upload.description = description;
+    try {
+        admin.database().ref("spaces/").push().set(upload);
 
-    //TODO: creacion del espacio
-    /*
+    } catch (error) {
+        res.status(500).json({
+            "status": "Internal Server Error",
+            "message": `${error}`
+        });
+        return;
+    }
+
     res.status(201).json({
         "status": "success",
         "message": "Space created correctly"
     });
-    */
-   
-    //temporalmente
-    res.status(501).send();
 });
 
 //eliminar un espacio
