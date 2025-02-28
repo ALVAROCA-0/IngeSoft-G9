@@ -27,6 +27,7 @@ app.use('/spaces/availability', spaceAvailability);
 app.use('/spaces', spacesAdmin);
 app.use('/auth/create', createUser);
 
+
 //port especificado en el .env
 //const PORT = process.env.PORT;
 
