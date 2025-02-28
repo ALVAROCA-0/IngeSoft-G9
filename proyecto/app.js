@@ -21,7 +21,7 @@ app.use(express.static('public'));
 
 //respuestas 
 app.use('/auth/login', userAuth);
-app.use('/reservations', reserveSpace);
+app.use('/spaces/reservations', reserveSpace);
 app.use('/spaces/search', searchSpaces);
 app.use('/spaces/availability', spaceAvailability);
 app.use('/spaces', spacesAdmin);
