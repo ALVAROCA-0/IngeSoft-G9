@@ -2,20 +2,17 @@ const request = require('supertest');
 const express = require('express');
 const bodyParser = require('body-parser');
 
-// Mockear el módulo de Firebase para simular las llamadas a Firebase Auth y Firestore
 jest.mock('../config/firebase', () => {
-  // Simula la función createUser para Firebase Auth
+  
   const createUserMock = jest.fn().mockResolvedValue({
     uid: 'fakeUid123',
     displayName: 'Test User'
   });
 
-  // Simula la función set para Firestore
   const setMock = jest.fn().mockResolvedValue(true);
   const docMock = jest.fn(() => ({ set: setMock }));
   const collectionMock = jest.fn(() => ({ doc: docMock }));
 
-  // Simula el método firestore() de admin
   const firestore = () => ({
     collection: collectionMock,
     FieldValue: {
@@ -31,14 +28,15 @@ jest.mock('../config/firebase', () => {
   return { admin };
 });
 
-// Importa el router que queremos testear
+// traer router pa testear
 const userRouter = require('../routes/CreateUser');
 
-// Configura una instancia de Express para el test
+// abrirlo para que pueda llamar de api
 const app = express();
 app.use(bodyParser.json());
 app.use('/api/users', userRouter);
 
+//test 1 crear usuario todo ok 
 describe('POST /api/users', () => {
   it('debería crear un usuario y retornar status 201', async () => {
     const response = await request(app)
@@ -55,6 +53,8 @@ describe('POST /api/users', () => {
     expect(response.body).toHaveProperty('status', 'success');
   });
 
+  //test 2 faltan los parametros o alguno deberia dar error
+
   it('debería retornar error 400 si faltan campos requeridos', async () => {
     const response = await request(app)
       .post('/api/users')
@@ -68,8 +68,10 @@ describe('POST /api/users', () => {
     expect(response.body).toHaveProperty('message', 'Email, password, nombre, or rol missing');
   });
 
+  // test 3 lo que deberia hacer si firebase falla, deberia dar error 
+
   it('debería retornar error 500 si createUser falla', async () => {
-    // Forzamos que admin.auth().createUser falle para simular un error en Firebase Auth.
+
     const { admin } = require('../config/firebase');
     admin.auth.mockImplementationOnce(() => ({
       createUser: jest.fn().mockRejectedValue(new Error('Firebase auth error'))
