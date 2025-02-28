@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
-const { admin } = require('../config/firebase'); // Importar admin instance
+const { admin } = require('../config/firebase'); 
+const db = admin.firestore();
 
 
 router.post('/', async (req, res) => {
@@ -14,7 +15,7 @@ router.post('/', async (req, res) => {
     }
 
     try {
-        // 1️⃣ Crear usuario en Firebase Authentication
+        // Crear usuario en Authentication
         const userRecord = await admin.auth().createUser({
             email,
             password,
@@ -22,12 +23,12 @@ router.post('/', async (req, res) => {
         });
 
 
-        // 2️⃣ Guardar información en Firestore (usando el `uid` del usuario como ID del documento)
+        //  Guardar información en Firestore (usando el `uid` del usuario como ID del documento)
         await db.collection('/users').doc(userRecord.uid).set({
             name: nombre,
             email: email,
             rol: rol, // El rol lo tomamos del body del request
-            createdAt: admin.firestore.FieldValue.serverTimestamp()
+            
         });
 
         res.status(201).json({

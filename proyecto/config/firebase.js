@@ -12,7 +12,7 @@ let serviceAccount;
 try {
   serviceAccount = require(serviceAccountPath);
 } catch (error) {
-  console.error("❌ Error al cargar la clave privada de Firebase:", error.message);
+  console.error("Error al cargar la clave privada de Firebase:", error.message);
   console.error("Ruta del archivo:", serviceAccountPath);
   process.exit(1); // Detiene la ejecución si falta el archivo
 }
@@ -20,10 +20,11 @@ try {
 // Inicializa Firebase con la clave privada
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
-    databaseURL: process.env.DATABASE_LINK
+  databaseURL: process.env.FIREBASE_DATABASE_URL
+    
 });
 
 const firestore = admin.firestore();
 const database = admin.database();
 
-module.exports = { admin, firestore };  
+module.exports = { admin };  
