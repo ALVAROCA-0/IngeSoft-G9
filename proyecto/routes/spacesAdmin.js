@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
-const { admin } = require('../config/firebase'); // Import admin instance
+const { admin } = require('../config/firebase'); 
+const db = admin.firestore();
 
 /*
 En este archivo vienen los tres metodos para gestionar espacios.
@@ -8,32 +9,48 @@ Probablemente se debe añadir a todos un checkeo del administrador que intenta
 realizarlos. Pero no tengo idea de eso ¯\_(ツ)_/¯
 */
 //creacion de un nuevo espacio
-router.post("/", (req,res) => {
+router.post("/new", async (req,res) => {
     //variables de interes en el body
-    const { name, capacity, location, equipment, description } = req.body
+    const { name, capacity, location, owner_id, equipment, description } = req.body
 
     //verificacion de variables obligatorias
-    if (
-        typeof name == "undefined" ||
-        typeof capacity == "undefined" ||
-        typeof location == "undefined"
-    ) {
+    if (!name || !capacity || !location || !owner_id) {
         res.status(400).json({ //respuesta 400
             "status":"Bad request",
-            "message": "Name or capacity or location missing"
+            "message": "Owner_id, name, capacity or location missing"
         });
         return; // terminar función
     }
 
     var upload = {
+        "owner_id":owner_id,
         "name":name,
         "capacity":capacity,
         "location":location
     }
     if (equipment) upload.equipment = equipment;
     if (description) upload.description = description;
+    var created_space;
     try {
-        admin.database().ref("spaces/").push().set(upload);
+        let ownerSnap = await db.collection("/users").doc(owner_id).get();
+        
+        if (!ownerSnap.exists) {
+            res.status(404).json({
+                "status": "Not Found",
+                "message": "Owner not found"
+            });
+            return;
+        }
+
+        if (ownerSnap.data().rol !== "admin") {
+            res.status(403).json({
+                "status": "Forbidden",
+                "message": "Owner does not have admin privileges"
+            });
+            return;
+        }
+
+        created_space = await db.collection("/spaces").add(upload);
 
     } catch (error) {
         res.status(500).json({
@@ -44,8 +61,9 @@ router.post("/", (req,res) => {
     }
 
     res.status(201).json({
-        "status": "success",
-        "message": "Space created correctly"
+        status: "success",
+        message: "Space created correctly",
+        space_id: created_space.id
     });
 });
 

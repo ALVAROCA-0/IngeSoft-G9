@@ -25,6 +25,6 @@ admin.initializeApp({
 });
 
 const firestore = admin.firestore();
-const database = admin.database();
+// const database = admin.database();
 
-module.exports = { admin };  
+module.exports = { admin, firestore };  
