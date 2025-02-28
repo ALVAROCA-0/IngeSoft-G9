@@ -11,6 +11,7 @@ const searchSpaces = require('./routes/searchSpaces');
 const spaceAvailability = require('./routes/spaceAvailability');
 const spacesAdmin = require('./routes/spacesAdmin');
 const createUser = require('./routes/CreateUser');
+const historyReserve = require('./routes/historyReserve');
 
 
 const app = express();
@@ -25,6 +26,7 @@ app.use('/spaces/search', searchSpaces);
 app.use('/spaces/availability', spaceAvailability);
 app.use('/spaces', spacesAdmin);
 app.use('/auth/create', createUser);
+app.use('/spaces/history', historyReserve);
 
 // Servir la aplicación React (build)
 app.use(express.static(path.join(__dirname, '../client/build')));
