@@ -27,4 +27,5 @@ admin.initializeApp({
 const firestore = admin.firestore();
 const database = admin.database();
 const apiKey = process.env.FIREBASE_API_KEY;
-module.exports = { admin };  
+
+module.exports = { admin,firestore };  

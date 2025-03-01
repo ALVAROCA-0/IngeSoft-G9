@@ -1,12 +1,14 @@
 const express = require('express');
 const router = express.Router();
-const { admin } = require('../config/firebase');
+const { admin,firestore } = require('../config/firebase');
 const database = admin.database();
 
 /* 
 Ejemplo de Request: 
 GET /spaces/history?user_id=35&date_from=2024-01-01&date_to=2024-12-31
 */
+const dba = firestore
+const reservationsRef = dba.collection('reservations');
 
 router.get('/', async (req, res) => {
     const { user_id, date_from, date_to } = req.query;
@@ -21,10 +23,9 @@ router.get('/', async (req, res) => {
 
     try {
         // Obtener todas las reservas del usuario
-        const reservationsRef = database.ref('reservations');
-        const snapshot = await reservationsRef.orderByChild('user_id').equalTo(user_id).once('value');
-
-        if (!snapshot.exists()) {
+        const snapshot = await reservationsRef.where("user_id", "==", user_id).get()
+        
+        if (snapshot == null   ||  snapshot.empty ) {
             return res.status(204).json({ "status": "No Content", "message": "No reservations found" });
         }
 
@@ -34,7 +35,7 @@ router.get('/', async (req, res) => {
         const endDate = date_to ? new Date(date_to) : null;
 
         snapshot.forEach((reservationSnap) => {
-            const reservation = reservationSnap.val();
+            const reservation = reservationSnap.data();
             const reservationDate = new Date(reservation.start_time); // Convertir a objeto Date
 
             // Si hay rango de fechas, filtramos las reservas

@@ -18,8 +18,21 @@ const Login = () => {
       });
       const result = await response.json();
       if (response.ok) {
-        // Guarda el token o realiza otras acciones, luego redirige:
-        navigate('/pantalla_principal');
+
+        const response2 = await fetch('/users/'+result.localId, {
+            method: 'GET',
+            headers: { 'Content-Type': 'application/json' }
+          });
+          const result2 = await response2.json();
+          if (response2.ok) {
+        //alert(result2.name);
+          }
+
+        navigate('/pantalla_principal',{state: {nombre:result2.name,
+            id:result.localId,
+            email:email
+        }});
+        //alert(result.localId);
       } else {
         alert('Error al iniciar sesión: ' + result.message);
       }

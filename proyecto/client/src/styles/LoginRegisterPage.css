@@ -1,0 +1,32 @@
+#btn-inicial {
+    /* estilos específicos para el botón de login */
+    background-color: #4285f4;
+  }
+  
+  .btn {
+    /* estilos comunes para todos los botones */
+    padding: 10px 20px;
+    border: none;
+    border-radius: 4px;
+  }
+  
+  .btn-primary {
+    color: white;
+  }
+  
+  
+.logo {
+    width: 300px; 
+    height: auto; 
+    display: block; 
+    margin: 10px auto; 
+  }
+  
+  .logo-positioned {
+    position: absolute;
+    top: 50px;  
+    left: 30px; 
+    width: 150px;
+    height: auto;
+  }
+  
