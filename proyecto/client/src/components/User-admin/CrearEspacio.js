@@ -1,12 +1,25 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import '../../styles/CrearEspacio.css';
+import { getUser, updateCookie } from '../../shared_funcs/cookies';
 
 function CrearEspacio() {
     const location = useLocation();
-    const userData = location.state || {};
+    const userData = getUser();
+
+    useEffect(()=> {
+        if (!userData) {
+            navigate("/");
+            return;
+        }
+        if (!["admin",'arrendador'].includes(userData.rol)) {
+            updateCookie('user','/',30);
+            navigate('/pantalla_principal')
+        }
+    });
+
     const navigate = useNavigate();
-      const [error, setError] = useState(null);
+    const [error, setError] = useState(null);
 
     async function handleSubmit(event) {
         const obligatory = ['name', 'capacity', 'location', 'type'];
@@ -45,19 +58,22 @@ function CrearEspacio() {
             // navigate(`/mis_espacios/${res.body.space_id}`)
         } else if (status === 404) {
             setError('No se encontro el perfil de administrador, ingrese de nuevo');
+            updateCookie('user','/',-1);
             navigate('/')
         } else if (status === 403) {
             setError('El usuario no tiene estatus de administrador');
-            navigate('/pantalla_principal', {state:userData})
+            updateCookie('user','/',30);
+            navigate('/pantalla_principal')
         } else {
             setError('Ocurrio un error al crear el espacio');
         }
         
     } 
-
+    
     const handleVolver = () => {
-        // Volver a la pantalla principal manteniendo los datos del usuario
-        navigate('/pantalla_principal', { state: userData });
+        updateCookie('user','/',30);
+        // Volver a la pantalla principal
+        navigate('/pantalla_principal');
       };
     return (
         <div className='container main-body'>

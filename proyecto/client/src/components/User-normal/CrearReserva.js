@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation, useParams } from 'react-router-dom';
 import '../../styles/CrearReserva.css';
+import { getUser, updateCookie } from '../../shared_funcs/cookies';
 // Comentar o eliminar esta importación si no se usará en absoluto
 // import DisponibilidadEspacio from './DisponibilidadEspacio';
 
@@ -20,10 +21,15 @@ function CrearReserva() {
   const navigate = useNavigate();
   const location = useLocation();
   const { id } = useParams(); // Obtenemos el ID del espacio de la URL
-  const userData = location.state || {};
+  const userData = getUser();
   
   // Cargar información del espacio
   useEffect(() => {
+    if (!userData) {
+      navigate("/");
+      return;
+    }
+
     const cargarEspacio = async () => {
       try {
         const response = await fetch(`/spaces/search/${id}`);
@@ -107,14 +113,8 @@ function CrearReserva() {
       if (response.ok) {
         // Éxito - mostrar alerta y navegar a la pantalla principal
         alert('¡Reserva creada exitosamente!');
-        navigate('/reservar', { 
-          state: { 
-            id: userData.id, 
-            nombre: userData.nombre,
-            email: userData.email,
-            rol: userData.rol
-          } 
-        });
+        updateCookie('user','/',30);
+        navigate('/mis_reservas');
       } else {
         // Manejar errores específicos
         if (response.status === 409) {
@@ -134,7 +134,8 @@ function CrearReserva() {
   };
   
   const handleVolver = () => {
-    navigate('/reservar', { state: userData });
+    updateCookie('user','/',30);
+    navigate('/reservar');
   };
   
   // Función para establecer hora y fecha mínimas

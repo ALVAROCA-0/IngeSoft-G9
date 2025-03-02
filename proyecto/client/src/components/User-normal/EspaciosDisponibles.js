@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import '../../styles/EspaciosDisponibles.css';
+import { getUser, updateCookie } from '../../shared_funcs/cookies';
 
 function EspaciosDisponibles() {
   const [espacios, setEspacios] = useState([]);
@@ -15,7 +16,7 @@ function EspaciosDisponibles() {
   
   const navigate = useNavigate();
   const location = useLocation();
-  const userData = location.state || {};
+  const userData = getUser();
 
   // Función para cargar espacios con filtros
   const cargarEspacios = async (filtros = {}) => {
@@ -70,6 +71,9 @@ function EspaciosDisponibles() {
 
   // Cargar espacios al inicio
   useEffect(() => {
+    if (!userData) { //si no esta definida la cookie
+      navigate("/");
+    }
     cargarEspacios();
   }, []);
 
@@ -107,17 +111,14 @@ function EspaciosDisponibles() {
 
   const handleReservar = (espacioId) => {
     // Navegar a la página de reserva con el ID del espacio
-    navigate(`/reservar/${espacioId}`, { 
-      state: { 
-        ...userData,
-        espacioId 
-      } 
-    });
+    updateCookie('user','/',30);
+    navigate(`/reservar/${espacioId}`);
   };
-
+  
   const handleVolver = () => {
     // Volver a la pantalla principal manteniendo los datos del usuario
-    navigate('/pantalla_principal', { state: userData });
+    updateCookie('user','/',30);
+    navigate('/pantalla_principal');
   };
 
 return (

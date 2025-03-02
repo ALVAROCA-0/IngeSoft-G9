@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import '../../../src/styles/MisReservas.css'; // Importamos el CSS
+import { getUser, updateCookie } from '../../shared_funcs/cookies';
 
 function MisReservas() {
     const location = useLocation();
@@ -9,8 +10,9 @@ function MisReservas() {
     const [spacesInfo, setSpacesInfo] = useState({});
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(true);
-  
-    const id = location.state;
+    
+    const userInfo = getUser();
+    const id = userInfo? userInfo.id:undefined;
 
     // Formatear fechas para visualización
     const formatDate = (dateString) => {
@@ -80,11 +82,16 @@ function MisReservas() {
     };
 
     useEffect(() => {
+        if (!id) { //si expiro la cookie de "user"
+            navigate("/");
+            return;
+        }
         // Llamada GET con query params al montar el componente
         loadReservations();
     }, []); 
 
     const handleGoBack = () => {
+        updateCookie('user','/',30);
         navigate(-1); // Regresa a la página anterior
     };
 

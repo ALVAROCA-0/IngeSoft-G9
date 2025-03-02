@@ -1,29 +1,31 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import '../../styles/PantallaPrincipal.css';
 import { useLocation, useNavigate } from 'react-router-dom';
+import { getUser, updateCookie } from '../../shared_funcs/cookies';
 
 function PantallaPrincipal() {
   const location = useLocation();
   const navigate = useNavigate();
-  const { nombre, id, email, rol } = location.state;
+  
+  var userInfo = getUser();
+  useEffect(()=>{ if(!userInfo) navigate('/'); })
+  const { nombre, id, email, rol } = userInfo?userInfo:{};
 
   const handleReservasClick = () => {
-    navigate('/mis_reservas', { state: id });
+    updateCookie('user','/',30);
+    navigate('/mis_reservas');
   };
 
   const handleReservarClick = () => {
-    navigate('/reservar', { 
-      state: { 
-        id, 
-        nombre, 
-        email, 
-        rol 
-      } 
-    });
+    updateCookie('user','/',30);
+    navigate('/reservar');
   };
   
   const handleLogout = () => {
     if (window.confirm('¿Estás seguro de que deseas cerrar sesión?')) {
+      // quitar cookie de con info de usuario
+      updateCookie('user','/',-1);
+
       // Navegar a la página de inicio/login
       navigate('/');
     }
@@ -72,14 +74,20 @@ function PantallaPrincipal() {
               <button 
                 id="btn-mis-espacios" 
                 className="btn btn-primary"
-                onClick={() => navigate('/mis_espacios', { state: { id, nombre, email, rol } })}
+                onClick={() => { 
+                  updateCookie('user','/',30);
+                  navigate('/mis_espacios');
+                }}
               >
                 Mis Espacios
               </button>
               <button 
                 id="btn-crear-espacio" 
                 className="btn btn-secondary"
-                onClick={() => navigate('/crear_espacio', { state: { id, nombre, email, rol } })}
+                onClick={() => {
+                  updateCookie('user','/',30);
+                  navigate('/crear_espacio');
+                }}
               >
                 Crear Espacio
               </button>

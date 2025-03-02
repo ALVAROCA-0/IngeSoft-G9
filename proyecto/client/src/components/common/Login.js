@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { setCookie, getUser } from '../../shared_funcs/cookies'
 
 const Login = () => {
   const [email, setEmail] = useState('');
@@ -28,12 +29,17 @@ const Login = () => {
         //alert(result2.name);
           }
 
-          navigate('/pantalla_principal',{state: {
+          const userInfo = {
             nombre: result2.name,
             id: result.localId,
             email: email,
             rol: result2.rol  // Añadir esta línea (asumiendo que el rol está en result2.rol)
-        }});
+          };
+          var currDate = new Date();
+          currDate.setMinutes(currDate.getMinutes()+30);
+          setCookie('user', JSON.stringify(userInfo), '/', { expires: currDate})
+
+          navigate('/pantalla_principal');
         //alert(result.localId);
       } else {
         alert('Error al iniciar sesión: ' + result.message);
