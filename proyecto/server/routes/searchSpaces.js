@@ -18,13 +18,22 @@ router.get('/', async (req, res) => {
         }
         
         if (capacity) {
-            // Buscar espacios con capacidad mayor o igual
-            query = query.where('capacity', '>=', parseInt(capacity));
+            // Convertir a número y verificar que sea válido
+            const capacityNum = parseInt(capacity, 10);
+            console.log("Capacidad filtrada:", capacityNum); // Depuración
+            
+            if (!isNaN(capacityNum)) {
+                // Asegúrate de que se compare como número
+                query = query.where('capacity', '>=', capacityNum);
+            }
         }
         
         if (location) {
-            // Filtrar por ubicación exacta
-            query = query.where('location', '==', location);
+            // Búsqueda por prefijo: busca ubicaciones que comiencen con el texto ingresado
+            // Esto usa un rango: desde el texto hasta el texto + un caracter muy alto
+            const locationEnd = location + '\uf8ff';
+            query = query.where('location', '>=', location)
+                         .where('location', '<=', locationEnd);
         }
         
         // Ejecutar la consulta
@@ -51,6 +60,7 @@ router.get('/', async (req, res) => {
                 capacity: data.capacity || 0,
                 description: data.description || '',
                 location: data.location || 'No especificada',
+                type: data.type || 'No especificado',  // Agregar el tipo
                 owner_id: data.owner_id
             });
         });
@@ -99,6 +109,7 @@ router.get('/:id', async (req, res) => {
                 capacity: spaceData.capacity || 0,
                 description: spaceData.description || '',
                 location: spaceData.location || 'No especificada',
+                type: spaceData.type || 'No especificado',  // Agregar el tipo
                 owner_id: spaceData.owner_id
             }
         });
