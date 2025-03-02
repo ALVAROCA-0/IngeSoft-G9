@@ -1,14 +1,14 @@
 const request = require('supertest');
-const app = require('../app'); // Asegúrate de que apunta a la instancia de tu aplicación Express
+const app = require('../app'); // Asegúrate de que este sea el archivo correcto donde se configura tu servidor Express
 
-describe('POST /reservations', () => {
-    const validReservation = {
-        space_id: '-OKCh4Nq-ctluXb5S6pJ',
-        start_time: '2025-03-15T09:00:00Z',
-        end_time: '2025-03-15T11:00:00Z',
-        user_id: '8OUZ28cuNjfdMi0DEDHd'
-    };
-
+describe('Reserva de Espacios', () => {
+    const validReservation = 
+    {
+        "space_id": "12345",
+        "start_time": "2025-05-15T14:00:00Z",
+        "end_time": "2025-05-15T16:00:00Z",
+        "user_id": "8OUZ28cuNjfdMi0DEDHd"
+      };
     test('Debe crear una reserva con datos válidos', async () => {
         const response = await request(app)
             .post('/spaces/reservations')
@@ -19,7 +19,6 @@ describe('POST /reservations', () => {
         expect(response.body.data).toHaveProperty('reservation_id');
         expect(response.body.data).toHaveProperty('pdf_url');
     });
-
     test('Debe devolver 400 si falta algún campo requerido', async () => {
         const incompleteReservation = { ...validReservation };
         delete incompleteReservation.start_time;
