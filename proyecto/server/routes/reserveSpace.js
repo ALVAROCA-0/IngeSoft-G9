@@ -95,7 +95,8 @@ router.post('/', async (req, res) => {
             start_time: start_time,
             end_time: end_time,
             user_id: user_id || 'anonymous', // In case user_id not provided
-            created_at: admin.firestore.FieldValue.serverTimestamp()
+            created_at: admin.firestore.FieldValue.serverTimestamp(),
+            state: "active" // Add this field to set initial state
         };
         
         // Add new reservation to Firestore
@@ -180,6 +181,75 @@ router.get('/:spaceId/availability', async (req, res) => {
       });
     }
   });
+
+// Endpoint to update reservation state (cancel/etc)
+router.patch('/:id', async (req, res) => {
+    const reservationId = req.params.id;
+    const { state } = req.body;
+    
+    if (!state || !['active', 'canceled', 'past'].includes(state)) {
+        return res.status(400).json({
+            "status": "Bad request",
+            "message": "Valid state is required (active, canceled, or past)"
+        });
+    }
+    
+    try {
+        const reservationRef = db.collection('reservations').doc(reservationId);
+        const reservationSnap = await reservationRef.get();
+        
+        if (!reservationSnap.exists) {
+            return res.status(404).json({
+                "status": "Not found", 
+                "message": "Reservation not found"
+            });
+        }
+        
+        await reservationRef.update({ state });
+        
+        return res.status(200).json({
+            "status": "success",
+            "message": "Reservation state updated successfully"
+        });
+    } catch (error) {
+        console.error("Database error:", error);
+        return res.status(500).json({
+            "status": "Internal Server Error",
+            "message": error.message || "Unexpected error occurred"
+        });
+    }
+});
+
+// Endpoint to cancel reservation
+router.delete('/:id', async (req, res) => {
+    const reservationId = req.params.id;
+    
+    try {
+        const reservationRef = db.collection('reservations').doc(reservationId);
+        const reservationSnap = await reservationRef.get();
+        
+        if (!reservationSnap.exists) {
+            return res.status(404).json({
+                "status": "Not found", 
+                "message": "Reservation not found"
+            });
+        }
+        
+        // Update state to canceled instead of deleting
+        await reservationRef.update({ state: "canceled" });
+        
+        return res.status(200).json({
+            "status": "success",
+            "message": "Reservation canceled successfully"
+        });
+    } catch (error) {
+        console.error("Database error:", error);
+        return res.status(500).json({
+            "status": "Internal Server Error",
+            "message": error.message || "Unexpected error occurred"
+        });
+    }
+});
 
 // exporta el router a app.js
 module.exports = router;

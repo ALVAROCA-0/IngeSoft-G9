@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation, useParams } from 'react-router-dom';
 import '../../styles/CrearReserva.css';
-import DisponibilidadEspacio from './DisponibilidadEspacio';
+// Comentar o eliminar esta importación si no se usará en absoluto
+// import DisponibilidadEspacio from './DisponibilidadEspacio';
 
 function CrearReserva() {
   const [fechaInicio, setFechaInicio] = useState('');
@@ -11,19 +12,15 @@ function CrearReserva() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [espacio, setEspacio] = useState(null);
+  // Estados relacionados con la disponibilidad que podríamos mantener por si acaso
   const [fechaSeleccionada, setFechaSeleccionada] = useState('');
+  const [horaIntentada, setHoraIntentada] = useState(null);
+  const [mostrarDisponibilidad, setMostrarDisponibilidad] = useState(false);
   
   const navigate = useNavigate();
   const location = useLocation();
   const { id } = useParams(); // Obtenemos el ID del espacio de la URL
   const userData = location.state || {};
-  
-  // Establecer fecha actual formateada como YYYY-MM-DD al cargar
-  useEffect(() => {
-    const hoy = new Date();
-    const fechaActual = hoy.toISOString().split('T')[0];
-    setFechaSeleccionada(fechaActual);
-  }, []);
   
   // Cargar información del espacio
   useEffect(() => {
@@ -56,6 +53,15 @@ function CrearReserva() {
     // Combinar fecha y hora para crear timestamps ISO
     const startTime = new Date(`${fechaInicio}T${horaInicio}:00`);
     const endTime = new Date(`${fechaFin}T${horaFin}:00`);
+    
+    // Guardar la hora intentada para resaltarla en caso de conflicto
+    setHoraIntentada({
+      start: startTime,
+      end: endTime
+    });
+    
+    // Mostrar disponibilidad al intentar hacer submit
+    setMostrarDisponibilidad(true);
     
     // Validar que las fechas sean correctas
     if (isNaN(startTime) || isNaN(endTime)) {
@@ -113,6 +119,8 @@ function CrearReserva() {
         // Manejar errores específicos
         if (response.status === 409) {
           setError('Este espacio ya está reservado para ese horario.');
+          // Actualizar la fecha seleccionada para que el componente de disponibilidad se actualice
+          setFechaSeleccionada(fechaInicio);
         } else {
           setError(data.message || 'Error al crear la reserva');
         }
@@ -140,11 +148,21 @@ function CrearReserva() {
     setFechaInicio(nuevaFecha);
     setFechaSeleccionada(nuevaFecha);
   };
-
-  // Función para elegir qué fecha mostrar en la disponibilidad
-  const handleCambioFechaDisponibilidad = (e) => {
-    setFechaSeleccionada(e.target.value);
+  
+  const handleHoraInicioChange = (e) => {
+    const nuevaHora = e.target.value;
+    setHoraInicio(nuevaHora);
   };
+
+  // Esta función ya no se utilizará por ahora
+  /*
+  const handleVerificarDisponibilidad = () => {
+    if (fechaInicio) {
+      setFechaSeleccionada(fechaInicio);
+      setMostrarDisponibilidad(true);
+    }
+  };
+  */
   
   return (
     <div className="crear-reserva-container">
@@ -163,16 +181,6 @@ function CrearReserva() {
           </div>
         </div>
       )}
-      
-      {/* Componente de disponibilidad colocado debajo de la info del espacio */}
-      <div className="disponibilidad-wrapper">
-        {fechaSeleccionada && id && (
-          <DisponibilidadEspacio
-            spaceId={id}
-            selectedDate={fechaSeleccionada}
-          />
-        )}
-      </div>
       
       <form onSubmit={handleSubmit} className="formulario-reserva">
         <h3>Selecciona fecha y hora para tu reserva</h3>
@@ -195,7 +203,7 @@ function CrearReserva() {
               type="time"
               id="horaInicio"
               value={horaInicio}
-              onChange={(e) => setHoraInicio(e.target.value)}
+              onChange={handleHoraInicioChange}
               required
             />
           </div>
@@ -224,7 +232,30 @@ function CrearReserva() {
           </div>
         </div>
         
+        {/* Se quita el botón de verificar disponibilidad por ahora
+        <button 
+          type="button" 
+          className="btn-verificar" 
+          onClick={handleVerificarDisponibilidad}
+          disabled={!fechaInicio}
+        >
+          Verificar disponibilidad
+        </button>
+        */}
+        
         {error && <div className="error-message">{error}</div>}
+        
+        {/* Se quita el componente de disponibilidad por ahora
+        <div className="disponibilidad-wrapper">
+          {mostrarDisponibilidad && fechaSeleccionada && id && (
+            <DisponibilidadEspacio
+              spaceId={id}
+              selectedDate={fechaSeleccionada}
+              horaIntentada={horaIntentada}
+            />
+          )}
+        </div>
+        */}
         
         <div className="botones-accion">
           <button
