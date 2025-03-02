@@ -2,7 +2,7 @@ import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import LoginRegisterPage from './components/common/LoginRegisterPage';
 import PantallaPrincipal from './components/common/PantallaPrincipal';
-import MisReservas from './components/MisReservas';
+import MisReservas from './components/common/MisReservas';
 import EspaciosDisponibles from './components/User-normal/EspaciosDisponibles';
 import CrearReserva from './components/User-normal/CrearReserva';
 

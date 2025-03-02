@@ -36,7 +36,17 @@ router.get('/', async (req, res) => {
 
         snapshot.forEach((reservationSnap) => {
             const reservation = reservationSnap.data();
-            const reservationDate = new Date(reservation.start_time); // Convertir a objeto Date
+            const reservationDate = new Date(reservation.start_time);
+            const endDate = new Date(reservation.end_time);
+            const now = new Date();
+            
+            // Determine state if not already set
+            let state = reservation.state || "active";
+            
+            // If end date is in the past and state is still active, mark as past
+            if (state === "active" && endDate < now) {
+                state = "past";
+            }
 
             // Si hay rango de fechas, filtramos las reservas
             if (
@@ -44,11 +54,11 @@ router.get('/', async (req, res) => {
                 (!endDate || reservationDate <= endDate)
             ) {
                 reservations.push({
-                    reservation_id: reservationSnap.key,
+                    reservation_id: reservationSnap.id,  // Changed from key to id
                     space_id: reservation.space_id,
                     start_time: reservation.start_time,
                     end_time: reservation.end_time,
-                    status: "confirmed"
+                    status: state  // Use the state from data or calculated
                 });
             }
         });
