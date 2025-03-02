@@ -5,9 +5,9 @@ const bodyParser = require('body-parser');
 // Mockear el módulo de Firebase para simular las llamadas a Firestore
 jest.mock('../config/firebase', () => {
   // Simula la función add para Firestore
-  const addMock = jest.fn().mockResolvedValue({
+  const addMock = jest.fn().mockResolvedValue(Promise.resolve({
     id: 'fakeSpaceId123'
-  });
+  }));
   const docMock = jest.fn((docId) => ({
     get: () => {
       if (docId === '12345') { //usuario admin simulado 
@@ -22,7 +22,8 @@ jest.mock('../config/firebase', () => {
         });
       } else {
         return Promise.resolve({  //usuario no existe
-          exists: false
+          exists: false,
+          data: () => (undefined)
         });
       }
     }
@@ -64,7 +65,8 @@ describe('POST /api/users', () => {
           location: 'test',
           name: 'test',
           capacity: 10
-    });
+      })
+    ;
     
     expect(response.status).toBe(201);
     expect(response.body).toHaveProperty('message', 'Space created correctly');
@@ -72,7 +74,7 @@ describe('POST /api/users', () => {
     expect(response.body).toHaveProperty('status', 'success');
   });
 
-  //hay 16 combinaciones de los campos obligatorios, y no nos interesa donde estan todos
+  //hay 16 combinaciones de los campos obligatorios, y no nos interesa el caso donde estan todos (test de arriba)
   for (var i=0; i<15;i++) {
     var load = {};
     if (i&1) load.owner_id = '12345';
@@ -99,7 +101,8 @@ describe('POST /api/users', () => {
         location: 'test',
         name: 'test',
         capacity: 10
-      });
+      })
+    ;
     
     expect(response.status).toBe(404);
     expect(response.body).toHaveProperty('status', 'Not Found');
@@ -114,7 +117,8 @@ describe('POST /api/users', () => {
         location: 'test',
         name: 'test',
         capacity: 10
-      });
+      })
+    ;
     
     expect(response.status).toBe(403);
     expect(response.body).toHaveProperty('status', 'Forbidden');
