@@ -28,9 +28,11 @@ const Login = () => {
         //alert(result2.name);
           }
 
-        navigate('/pantalla_principal',{state: {nombre:result2.name,
-            id:result.localId,
-            email:email
+          navigate('/pantalla_principal',{state: {
+            nombre: result2.name,
+            id: result.localId,
+            email: email,
+            rol: result2.rol  // Añadir esta línea (asumiendo que el rol está en result2.rol)
         }});
         //alert(result.localId);
       } else {

@@ -8,13 +8,27 @@ const db = admin.firestore();
 //creacion de un nuevo espacio
 router.post("/new", async (req,res) => {
     //variables de interes en el body
-    const { name, capacity, location, owner_id, equipment, description } = req.body
+    const types = [
+        "Sala de conferencias",
+        "Sala de reuniónes",
+        "Aula",
+        "Auditorio"
+    ];
+    const { name, capacity, location, owner_id, type, description } = req.body
 
     //verificacion de variables obligatorias
-    if (!name || !capacity || !location || !owner_id) {
+    if (!name || !capacity || !location || !owner_id || !type) {
         res.status(400).json({ //respuesta 400
             "status":"Bad request",
             "message": "Owner_id, name, capacity or location missing"
+        });
+        return; // terminar función
+    }
+    
+    if (types.includes(type)) {
+        res.status(400).json({ //respuesta 400
+            "status":"Bad request",
+            "message": `Invalid type "${type}" not in ${types.join(", ")}`
         });
         return; // terminar función
     }
@@ -25,10 +39,11 @@ router.post("/new", async (req,res) => {
         "owner_id":owner_id,
         "name":name,
         "capacity":capacity,
-        "location":location
+        "location":location,
+        "type":type
     }
+
     //datos opcionales que puede tener
-    if (equipment) upload.equipment = equipment;
     if (description) upload.description = description;
     
     let failed = false; //por si ocurre un error al traer datos

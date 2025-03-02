@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
-const { admin } = require('../config/firebase');
-const database = admin.database();
+const { admin, firestore } = require('../config/firebase');
+const db = firestore;
 
 /* BODY ideal de la request
 {
@@ -29,22 +29,16 @@ router.post('/', async (req, res) => {
 
     try {
         // Check if space exists
-        const spaceRef = database.ref(`spaces/${space_id}`);
-        const spaceSnapshot = await spaceRef.once('value');
+        const spaceRef = db.collection('spaces').doc(space_id);
+        const spaceSnapshot = await spaceRef.get();
         
-        if (!spaceSnapshot.exists()) {
+        if (!spaceSnapshot.exists) {
             return res.status(404).json({
                 "status": "Not found",
                 "message": "Space not found"
             });
         }
 
-        // Check space availability
-        const reservationsRef = database.ref('reservations');
-        const reservationsSnapshot = await reservationsRef.orderByChild('space_id')
-            .equalTo(space_id)
-            .once('value');
-        
         // Convert strings to Date objects for comparison
         const requestStartTime = new Date(start_time);
         const requestEndTime = new Date(end_time);
@@ -64,10 +58,16 @@ router.post('/', async (req, res) => {
             });
         }
 
+        // Check for conflicts with existing reservations
+        const reservationsRef = db.collection('reservations');
+        const reservationsQuery = await reservationsRef
+            .where('space_id', '==', space_id)
+            .get();
+        
         // Check for conflicts
         let hasConflict = false;
-        reservationsSnapshot.forEach((reservationSnap) => {
-            const reservation = reservationSnap.val();
+        reservationsQuery.forEach((doc) => {
+            const reservation = doc.data();
             const existingStart = new Date(reservation.start_time);
             const existingEnd = new Date(reservation.end_time);
             
@@ -78,7 +78,7 @@ router.post('/', async (req, res) => {
                 (requestStartTime <= existingStart && requestEndTime >= existingEnd)
             ) {
                 hasConflict = true;
-                return true; // exit forEach loop
+                return; // exit forEach loop
             }
         });
         
@@ -95,14 +95,14 @@ router.post('/', async (req, res) => {
             start_time: start_time,
             end_time: end_time,
             user_id: user_id || 'anonymous', // In case user_id not provided
-            created_at: admin.database.ServerValue.TIMESTAMP
+            created_at: admin.firestore.FieldValue.serverTimestamp()
         };
         
-        const newReservationRef = reservationsRef.push();
-        await newReservationRef.set(newReservation);
+        // Add new reservation to Firestore
+        const newReservationRef = await db.collection('reservations').add(newReservation);
+        const reservationId = newReservationRef.id;
         
         // Generate a simple PDF URL (in a real app, you would generate an actual PDF)
-        const reservationId = newReservationRef.key;
         const pdfUrl = `https://firebase/${reservationId}.pdf`;
         
         return res.status(201).json({
@@ -121,6 +121,65 @@ router.post('/', async (req, res) => {
       });      
     }
 });
+
+router.get('/available-spaces', async (req, res) => {
+    try {
+        const spacesRef = db.collection('spaces');
+        const spacesSnapshot = await spacesRef.get();
+        
+        if (spacesSnapshot.empty) {
+            return res.status(404).json({
+                "status": "Not found",
+                "message": "No spaces available"
+            });
+        }
+
+        const spaces = [];
+        spacesSnapshot.forEach(doc => {
+            spaces.push({ id: doc.id, ...doc.data() });
+        });
+
+        return res.status(200).json({
+            "status": "success",
+            "data": spaces
+        });
+    } catch (error) {
+        console.error("Database error:", error);
+        return res.status(500).json({
+            "status": "Internal Server Error",
+            "message": error.message || "Unexpected error occurred"
+        });
+    }
+});
+
+// Endpoint para obtener reservas existentes de un espacio
+router.get('/:spaceId/availability', async (req, res) => {
+    const { spaceId } = req.params;
+    const { date } = req.query; // Opcionalmente filtrar por fecha
+    
+    try {
+      // Consultar reservas para este espacio
+      const reservationsRef = db.collection('reservations');
+      const snapshot = await reservationsRef
+        .where('space_id', '==', spaceId)
+        .get();
+      
+      const reservations = [];
+      snapshot.forEach(doc => {
+        reservations.push(doc.data());
+      });
+      
+      return res.status(200).json({
+        status: "success",
+        data: reservations
+      });
+    } catch (error) {
+      return res.status(500).json({
+        status: "Internal Server Error",
+        message: error.message
+      });
+    }
+  });
 
 // exporta el router a app.js
 module.exports = router;

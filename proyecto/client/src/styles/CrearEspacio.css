@@ -1,0 +1,80 @@
+.main-body {
+    --input-no-content-height: calc(8px + 1px + 0.5em + 1em);
+    max-width: min(15cm, 90%);
+    text-align: left;
+    form {
+        display: grid;
+        grid-template-areas:
+            "name capacity"
+            "location type"
+            "description description"
+            "button button"
+        ;
+        grid-template-columns: 48% 48%;
+        grid-template-rows:
+            calc(1em + var(--input-no-content-height))
+            calc(1em + var(--input-no-content-height))
+            auto
+            calc(1em + var(--input-no-content-height))
+        ;
+        column-gap: 4%;
+    }
+    align-items: center;
+}
+
+#name {
+    grid-area: name;
+}
+
+#capacity {
+    grid-area: capacity;
+}
+
+#location {
+    grid-area: location;
+}
+
+#type {
+    grid-area: type;
+}
+
+#description {
+    grid-area: description;
+    font-family: inherit;
+    resize: none;
+    min-height: calc(6em + var(--input-no-content-height));
+    max-height: calc(12em + var(--input-no-content-height));
+}
+
+#create {
+    grid-area: button;
+}
+
+h2 {
+    margin: 0.25em 0;
+}
+
+input, button, select, textarea {
+    padding: 8px;
+    border-radius: 5px;
+    border-width: 1px;
+    border-color: black;
+    margin: 0.5em 0;
+}
+
+select:invalid {
+    color: gray;
+    font-weight: bold;
+}
+
+option {
+    color: black;
+}
+
+#description::placeholder {
+    font-weight: normal;
+}
+
+input::placeholder {
+    font-weight: bold;
+}

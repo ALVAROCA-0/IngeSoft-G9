@@ -1,0 +1,209 @@
+.espacios-container {
+  max-width: 1200px;
+  margin: 30px auto;
+  padding: 20px;
+  position: relative;
+  min-height: 100vh;
+  padding-bottom: 80px; /* Espacio para el botón de volver */
+}
+
+.espacios-container h1 {
+  text-align: center;
+  margin-bottom: 30px;
+  color: #343a40;
+}
+
+.espacios-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 25px;
+}
+
+.espacio-card {
+  background-color: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  padding: 20px;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  display: flex;
+  flex-direction: column;
+}
+
+.espacio-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+}
+
+.espacio-card h2 {
+  color: #007bff;
+  font-size: 1.4rem;
+  margin-top: 0;
+  margin-bottom: 15px;
+  border-bottom: 1px solid #e9ecef;
+  padding-bottom: 10px;
+}
+
+.espacio-details {
+  flex: 1;
+}
+
+.espacio-details p {
+  margin: 8px 0;
+  color: #495057;
+}
+
+.espacio-descripcion {
+  margin-top: 15px !important;
+  color: #6c757d !important;
+  font-size: 0.95rem;
+}
+
+.btn-reservar {
+  margin-top: 20px;
+  padding: 10px 0;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: background-color 0.2s ease;
+  width: 100%;
+}
+
+.btn-reservar:hover {
+  background-color: #0056b3;
+}
+
+.loading, .error-message, .no-espacios {
+  text-align: center;
+  margin: 40px 0;
+  color: #6c757d;
+  font-size: 1.2rem;
+}
+
+.error-message {
+  color: #dc3545;
+}
+
+.btn-volver {
+  position: fixed;
+  bottom: 30px;
+  left: 30px;
+  padding: 10px 20px;
+  background-color: #6c757d;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: background-color 0.2s ease;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+.btn-volver:hover {
+  background-color: #5a6268;
+}
+
+/* Panel de filtros */
+.filtros-panel {
+  background-color: #f8f9fa;
+  padding: 20px;
+  border-radius: 8px;
+  margin-bottom: 30px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  border: 1px solid #e9ecef;
+}
+
+.filtros-panel h3 {
+  margin-top: 0;
+  margin-bottom: 15px;
+  font-size: 1.2rem;
+  color: #495057;
+}
+
+.filtros-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 15px;
+}
+
+.filtro-campo {
+  margin-bottom: 15px;
+}
+
+.filtro-campo label {
+  display: block;
+  margin-bottom: 5px;
+  font-weight: 500;
+  color: #495057;
+}
+
+.filtro-campo input,
+.filtro-campo select {
+  width: 100%;
+  padding: 8px 10px;
+  border-radius: 4px;
+  border: 1px solid #ced4da;
+  font-size: 1rem;
+}
+
+.filtro-campo input:focus,
+.filtro-campo select:focus {
+  outline: none;
+  border-color: #80bdff;
+  box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.25);
+}
+
+.filtros-botones {
+  margin-top: 20px;
+  display: flex;
+  gap: 10px;
+}
+
+.btn-filtrar, 
+.btn-limpiar {
+  padding: 8px 16px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: 500;
+}
+
+.btn-filtrar {
+  background-color: #007bff;
+  color: white;
+}
+
+.btn-filtrar:hover {
+  background-color: #0069d9;
+}
+
+.btn-limpiar {
+  background-color: #6c757d;
+  color: white;
+  padding: 8px 16px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.2s;
+}
+
+.btn-limpiar:hover {
+  background-color: #5a6268;
+}
+
+/* Animación sutil al limpiar filtros */
+@keyframes highlight {
+  0% { box-shadow: 0 0 0 0 rgba(108, 117, 125, 0.4); }
+  70% { box-shadow: 0 0 0 10px rgba(108, 117, 125, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(108, 117, 125, 0); }
+}
+
+.btn-limpiar:active {
+  animation: highlight 0.8s ease-in-out;
+}

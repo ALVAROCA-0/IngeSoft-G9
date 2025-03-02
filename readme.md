@@ -10,7 +10,7 @@
 ReservaPlus
 
 ## Icono o logo del proyecto
-<img src="./LogoReservaPlus.jpg" alt="ReservaPlus Logo" width="200" height="200">
+<img src="https://res.cloudinary.com/dmwkx8wmh/image/upload/v1740778102/LogoReservaPlus_1_fg1cwo.jpg" alt="ReservaPlus Logo" width="200" height="200">
 <sub>Imagen generada con [fotor.com](https://www.fotor.com/)</sub>
 
 ## Descripción del proyecto:
