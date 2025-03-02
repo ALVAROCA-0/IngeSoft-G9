@@ -6,20 +6,53 @@ function CrearEspacio() {
     const location = useLocation();
     const userData = location.state || {};
     const navigate = useNavigate();
+      const [error, setError] = useState(null);
 
     async function handleSubmit(event) {
+        const obligatory = ['name', 'capacity', 'location', 'type'];
         event.preventDefault();
         let formData = {};
-        for (var [key, value] of new FormData(document.getElementById('form')).entries()) { 
+        for (var [key, value] of new FormData(document.getElementById('form')).entries()) {
+            if (obligatory.includes(key) && !value) {
+                console.error(`The obligatory field ${key} is empty ${typeof value}`);
+                return;
+            } 
             formData[key] = value;
         }
-        if (formData.values().reduce((prev,curr)=>{ prev||!curr })) {
-            console.log(formData.values())
-            return;
+        
+        try {
+            formData.capacity = Number(formData.capacity);
+        } catch (err) {
+            console.log('Capacity must be a number');
         }
-        if (!isNaN(formData['capacity'])) {
-            return;
+        if (!window.confirm(
+            `¿Esta seguro de que quiere crear el nuevo espacio ${formData.name}?`
+        )) return;
+
+        formData.owner_id = userData.id;
+
+        const status = await fetch('/spaces/new', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(formData)
+        })
+        .then((res)=>{ return res.status; })
+        .catch((e)=>{ return 500; });
+        if(status ===201) {
+            alert('Espacio creado exitosamente!');
+            // navigate(`/mis_espacios/${res.body.space_id}`)
+        } else if (status === 404) {
+            setError('No se encontro el perfil de administrador, ingrese de nuevo');
+            navigate('/')
+        } else if (status === 403) {
+            setError('El usuario no tiene estatus de administrador');
+            navigate('/pantalla_principal', {state:userData})
+        } else {
+            setError('Ocurrio un error al crear el espacio');
         }
+        
     } 
 
     const handleVolver = () => {
@@ -69,12 +102,12 @@ function CrearEspacio() {
                     onInput={ (e) => {
                         const elem = document.getElementById("description")
                         elem.style.height = '';
-                        console.log(elem.scrollHeight);
                         elem.style.height = 109 + elem.scrollHeight - 125 + 'px';
                     }}
                 />
                 <button id='create' type='submit'>Crear!</button>
             </form>
+            {error && <div className="error-message">{error}</div>}
         </div>
     );
 }

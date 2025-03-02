@@ -69,7 +69,7 @@ router.post("/new", async (req,res) => {
         return;
     }
 
-    if (ownerData.rol !== "admin") {
+    if (!["admin","arrendador"].includes(ownerData.rol)) {
         res.status(403).json({
             "status": "Forbidden",
             "message": "Owner does not have admin privileges"
