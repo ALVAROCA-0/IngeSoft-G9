@@ -152,5 +152,34 @@ router.get('/available-spaces', async (req, res) => {
     }
 });
 
+// Endpoint para obtener reservas existentes de un espacio
+router.get('/:spaceId/availability', async (req, res) => {
+    const { spaceId } = req.params;
+    const { date } = req.query; // Opcionalmente filtrar por fecha
+    
+    try {
+      // Consultar reservas para este espacio
+      const reservationsRef = db.collection('reservations');
+      const snapshot = await reservationsRef
+        .where('space_id', '==', spaceId)
+        .get();
+      
+      const reservations = [];
+      snapshot.forEach(doc => {
+        reservations.push(doc.data());
+      });
+      
+      return res.status(200).json({
+        status: "success",
+        data: reservations
+      });
+    } catch (error) {
+      return res.status(500).json({
+        status: "Internal Server Error",
+        message: error.message
+      });
+    }
+  });
+
 // exporta el router a app.js
 module.exports = router;
