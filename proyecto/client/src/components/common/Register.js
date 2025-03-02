@@ -21,7 +21,7 @@ const Register = () => {
       const result = await response.json();
       if (response.ok) {
         alert('Usuario registrado exitosamente: ' + result.userId);
-        navigate('/pantalla_principal');
+        navigate('/', { state: { showLogin: true } });
       } else {
         alert('Error al registrarse: ' + result.message);
       }

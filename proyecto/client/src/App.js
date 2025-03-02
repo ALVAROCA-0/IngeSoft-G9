@@ -1,7 +1,7 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import LoginRegisterPage from './components/LoginRegisterPage';
-import PantallaPrincipal from './components/PantallaPrincipal';
+import LoginRegisterPage from './components/common/LoginRegisterPage';
+import PantallaPrincipal from './components/common/PantallaPrincipal';
 import MisReservas from './components/MisReservas';
 
 function App() {
