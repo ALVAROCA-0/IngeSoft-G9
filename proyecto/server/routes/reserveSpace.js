@@ -122,5 +122,35 @@ router.post('/', async (req, res) => {
     }
 });
 
+router.get('/available-spaces', async (req, res) => {
+    try {
+        const spacesRef = db.collection('spaces');
+        const spacesSnapshot = await spacesRef.get();
+        
+        if (spacesSnapshot.empty) {
+            return res.status(404).json({
+                "status": "Not found",
+                "message": "No spaces available"
+            });
+        }
+
+        const spaces = [];
+        spacesSnapshot.forEach(doc => {
+            spaces.push({ id: doc.id, ...doc.data() });
+        });
+
+        return res.status(200).json({
+            "status": "success",
+            "data": spaces
+        });
+    } catch (error) {
+        console.error("Database error:", error);
+        return res.status(500).json({
+            "status": "Internal Server Error",
+            "message": error.message || "Unexpected error occurred"
+        });
+    }
+});
+
 // exporta el router a app.js
 module.exports = router;

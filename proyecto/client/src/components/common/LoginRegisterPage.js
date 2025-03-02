@@ -19,9 +19,9 @@ const LoginRegisterPage = () => {
   return (
     <div className="container">
       <img src="https://res.cloudinary.com/dmwkx8wmh/image/upload/v1740778102/LogoReservaPlus_1_fg1cwo.jpg" alt="Logo" className="logo" />
-      <div className="options">
-        <button onClick={() => setIsLogin(false)} id="btn-inicial" className="btn btn-primary">¿Ya tienes cuenta?</button>
-        <button onClick={() => setIsLogin(true)} id="btn-inicial" className="btn btn-primary">Registrarse</button>
+      <div className="options-container">
+        <button onClick={() => setIsLogin(false)} id="btn-inicial" className={`btn btn-primary ${!isLogin ? 'active' : ''}`}>¿Ya tienes cuenta?</button>
+        <button onClick={() => setIsLogin(true)} id="btn-inicial" className={`btn btn-primary ${isLogin ? 'active' : ''}`}>Registrarse</button>
       </div>
       {isLogin ? <Register /> : <Login />}
     </div>

@@ -5,52 +5,87 @@ import { useLocation, useNavigate } from 'react-router-dom';
 function PantallaPrincipal() {
   const location = useLocation();
   const navigate = useNavigate();
-
-  const {nombre, id, email, rol} = location.state;
-  //alert(nombre+id+email);
+  const { nombre, id, email, rol } = location.state;
 
   const handleReservasClick = () => {
-    navigate('/mis_reservas', {state: id});
+    navigate('/mis_reservas', { state: id });
   };
 
   const handleReservarClick = () => {
-    navigate('/reservar');
+    navigate('/reservar', { 
+      state: { 
+        id, 
+        nombre, 
+        email, 
+        rol 
+      } 
+    });
+  };
+  
+  const handleLogout = () => {
+    if (window.confirm('¿Estás seguro de que deseas cerrar sesión?')) {
+      // Navegar a la página de inicio/login
+      navigate('/');
+    }
   };
 
   return (
     <div className="container">
-      <h1>Bienvenido {nombre}</h1>
-      
-      {/* Información del usuario */}
-      <div className="user-info" style={{
-        backgroundColor: "#f8f9fa",
-        padding: "15px",
-        borderRadius: "8px",
-        marginBottom: "20px",
-        textAlign: "left"
-      }}>
-        <h3>Información del usuario:</h3>
-        <p><strong>Nombre:</strong> {nombre}</p>
-        <p><strong>Correo:</strong> {email}</p>
-        <p><strong>Rol:</strong> {rol || "Usuario"}</p>
-        <p><strong>ID:</strong> {id}</p>
-      </div>
-      
-      <div className="options">
-        <button
-          id="btn-inicial"
-          className="btn btn-primary"
-          onClick={handleReservarClick}
-        >
-          Reservar
-        </button>
-        <button
-          id="btn-inicial"
-          className="btn btn-primary"
-          onClick={handleReservasClick}
-        >
-          Mis Reservas
-        </button>
+      <h1>Bienvenido</h1>
+      <hr style={{ border: '1px solid #ced4da', margin: '10px 0 20px' }} />
+      <div className="content">
+        {/* Columna izquierda: Información del usuario */}
+        <div className="user-info-container">
+          <div className="user-info">
+            <h3>Información del usuario:</h3>
+            <p><strong>Nombre:</strong> <span id="nombre">{nombre}</span></p>
+            <p><strong>Correo:</strong> <span id="email">{email}</span></p>
+            <p><strong>Rol:</strong> <span id="rol">{rol}</span></p>
+          </div>
+          <div className="logout-container">
+            <button id="btn-logout" className="btn btn-logout" onClick={handleLogout}>
+              Cerrar Sesión
+            </button>
+          </div>
+        </div>
+        
+        {/* Columna derecha: Botones */}
+        <div className="buttons-container">
+          <button 
+            id="btn-reservar" 
+            className="btn btn-primary"
+            onClick={handleReservarClick}
+          >
+            Reservar
+          </button>
+          <button 
+            id="btn-mis-reservas" 
+            className="btn btn-primary"
+            onClick={handleReservasClick}
+          >
+            Mis Reservas
+          </button>
+          
+          {/* Botones específicos para arrendadores */}
+          {rol === "arrendador" && (
+            <>
+              <button 
+                id="btn-mis-espacios" 
+                className="btn btn-primary"
+                onClick={() => navigate('/mis_espacios', { state: { id, nombre, email, rol } })}
+              >
+                Mis Espacios
+              </button>
+              <button 
+                id="btn-crear-espacio" 
+                className="btn btn-secondary"
+                onClick={() => navigate('/crear_espacio', { state: { id, nombre, email, rol } })}
+              >
+                Crear Espacio
+              </button>
+            </>
+          )}
+        </div>
       </div>
     </div>
   );
