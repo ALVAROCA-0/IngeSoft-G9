@@ -21,6 +21,9 @@ function MisEspacios() {
             return obj.spaces;
         })
         .catch((e)=> { failed = true });
+        if (failed) {
+            return;
+        }
         if (spaces.length > 0) {
             setEmpty(false);
             const elems = spaces.map((space) => (

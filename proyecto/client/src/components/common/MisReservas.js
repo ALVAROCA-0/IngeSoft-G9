@@ -29,7 +29,7 @@ function MisReservas() {
     // Función para cargar las reservas
     const loadReservations = () => {
         setLoading(true);
-        fetch('/spaces/history?user_id='+id, {
+        fetch(`/spaces/history/${id}`, {
             method: 'GET',
         })
         .then((response) => {

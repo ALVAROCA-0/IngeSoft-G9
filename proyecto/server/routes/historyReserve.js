@@ -10,8 +10,9 @@ GET /spaces/history?user_id=35&date_from=2024-01-01&date_to=2024-12-31
 const dba = firestore
 const reservationsRef = dba.collection('reservations');
 
-router.get('/', async (req, res) => {
-    const { user_id, date_from, date_to } = req.query;
+router.get('/:user_id', async (req, res) => {
+    const user_id = req.params.user_id;
+    const { date_from, date_to } = req.query;
 
     // Validar que user_id esté presente
     if (!user_id) {
