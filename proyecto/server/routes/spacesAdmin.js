@@ -162,6 +162,36 @@ router.delete("/:id/remove", async (req, res) => {
     res.status(204).send();
 });
 
+// obtener todos los espacios de un propietario
+router.get("/:owner_id", async (req, res) => {
+    const ownerId = req.params.owner_id;
+
+    let failed = false;
+    let spaces = await db.collection("/spaces")
+        .where("owner_id", "==", ownerId)
+        .get()
+        .then((snapshot) => {
+            if (snapshot.empty) {
+                return [];
+            }
+            return snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        })
+        .catch((error) => { failed = true; });
+
+    if (failed) {
+        res.status(500).json({
+            "status": "Internal Server Error",
+            "message": "An error occurred when fetching spaces"
+        });
+        return;
+    }
+
+    res.status(200).json({
+        status: "success",
+        spaces: spaces
+    });
+});
+
 //cambiar disponibilidad
 router.patch("/:id/availability/update", (req, res) => {
     const spaceId = req.params.id;
