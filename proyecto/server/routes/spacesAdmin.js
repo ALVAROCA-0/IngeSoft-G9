@@ -192,15 +192,91 @@ router.get("/:owner_id", async (req, res) => {
     });
 });
 
-//cambiar disponibilidad
-router.patch("/:id/availability/update", (req, res) => {
+//cambiar datos del espacio
+router.patch("/:id/update", async (req, res) => {
     const spaceId = req.params.id;
-    const { owner_id, remove, add } = req.body;
+    //variables de interes en el body
+    const types = [
+        "Sala de conferencias",
+        "Sala de reuniónes",
+        "Aula",
+        "Auditorio"
+    ];
+    const { name, capacity, location, owner_id, type, description } = req.body
 
-    // no tengo idea en base a la historia de usuario de como hacer esto :v
-    
-    //temporalmente
-    res.status(501).send();
+    if (type) {
+        if (!types.includes(type)) {
+            res.status(400).json({
+                "status": "Bad request",
+                "message": `Invalid type "${type}" not in ${types.join(", ")}`
+            });
+            return;
+        }
+        updateData.type = type;
+    }
+
+    //verificacion de variables obligatorias
+    if (!owner_id) {
+        res.status(400).json({
+            "status": "Bad request",
+            "message": "Owner_id missing"
+        });
+        return;
+    }
+
+    let failed = false;
+    let spaceData = await db.collection("/spaces").doc(spaceId)
+        .get()
+        .then((doc) => { return doc.data(); })
+        .catch((error) => { failed = true; });
+
+    if (failed) {
+        res.status(500).json({
+            "status": "Internal Server Error",
+            "message": "An error occurred when fetching space data"
+        });
+        return;
+    }
+
+    if (!spaceData) {
+        res.status(404).json({
+            "status": "Not Found",
+            "message": "Space not found"
+        });
+        return;
+    }
+
+    if (spaceData.owner_id !== owner_id) {
+        res.status(403).json({
+            "status": "Forbidden",
+            "message": "The client isn't the owner of the space"
+        });
+        return;
+    }
+
+    let updateData = {};
+    if (name && name !== spaceData.name) updateData.name = name;
+    if (capacity && capacity !== spaceData.capacity) updateData.capacity = capacity;
+    if (location && location !== spaceData.location) updateData.location = location;
+    if (description && description !== spaceData.description) updateData.description = description;
+    if (type && type !== spaceData.type) updateData.type = type;
+
+    await db.collection("/spaces").doc(spaceId)
+        .update(updateData)
+        .catch((error) => { failed = true; });
+
+    if (failed) {
+        res.status(500).json({
+            "status": "Internal Server Error",
+            "message": "An error occurred when updating space data"
+        });
+        return;
+    }
+
+    res.status(200).json({
+        status: "success",
+        message: "Space updated correctly"
+    });
 });
 
 // exporta el router a app.js

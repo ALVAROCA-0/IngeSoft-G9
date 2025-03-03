@@ -55,7 +55,9 @@ function updateCookie(name, path, extraDuration) {
  */
 function getUser() {
     var cookie = getCookie('user');
-    return cookie? JSON.parse(cookie):undefined;
+    if (cookie && cookie !== "undefined")
+        return JSON.parse(cookie);
+    return undefined;
 }
 
 export { setCookie, getCookie, updateCookie, getUser }

@@ -22,8 +22,9 @@ function CrearEspacio() {
     const [error, setError] = useState(null);
 
     async function handleSubmit(event) {
-        const obligatory = ['name', 'capacity', 'location', 'type'];
         event.preventDefault();
+        
+        const obligatory = ['name', 'capacity', 'location', 'type'];
         let formData = {};
         for (var [key, value] of new FormData(document.getElementById('form')).entries()) {
             if (obligatory.includes(key) && !value) {
@@ -32,15 +33,17 @@ function CrearEspacio() {
             } 
             formData[key] = value;
         }
+
+        if (!window.confirm(
+            `¿Esta seguro(a) de que quiere crear el nuevo espacio ${formData.name}?`
+        )) return;
         
         try {
             formData.capacity = Number(formData.capacity);
         } catch (err) {
             console.log('Capacity must be a number');
+            return;
         }
-        if (!window.confirm(
-            `¿Esta seguro de que quiere crear el nuevo espacio ${formData.name}?`
-        )) return;
 
         formData.owner_id = userData.id;
 
@@ -55,7 +58,8 @@ function CrearEspacio() {
         .catch((e)=>{ return 500; });
         if(status ===201) {
             alert('Espacio creado exitosamente!');
-            // navigate(`/mis_espacios/${res.body.space_id}`)
+            updateCookie('user','/',30);
+            navigate(`/mis_espacios`)
         } else if (status === 404) {
             setError('No se encontro el perfil de administrador, ingrese de nuevo');
             updateCookie('user','/',-1);

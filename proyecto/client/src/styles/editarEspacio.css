@@ -1,0 +1,94 @@
+#editar-espacio {
+    width: 80vw;
+    margin: 40px auto;
+
+    form {
+        --input-no-content-height: calc(8px + 1px + 0.5em + 1em);
+        display: grid;
+        grid-template-areas:
+            "name capacity"
+            "location type"
+            "description description"
+            "del edit"
+        ;
+        grid-template-columns: 48% 48%;
+        grid-template-rows:
+            calc(1em + var(--input-no-content-height))
+            calc(1em + var(--input-no-content-height))
+            auto
+            calc(1em + var(--input-no-content-height))
+        ;
+        column-gap: 4%;
+        label {
+            display: inline-flex;
+            flex-direction: row;
+            column-gap: 5px;
+            align-items: center;
+        }
+        button {
+            font-weight: bold;
+        }
+    }
+}
+
+input, button, select, textarea {
+    padding: 8px;
+    border-radius: 5px;
+    border-width: 1px;
+    border-color: black;
+    margin: 0.5em 0;
+}
+
+#name {
+    grid-area: name;
+}
+
+#capacity {
+    grid-area: capacity;
+}
+
+#location {
+    grid-area: location;
+}
+
+#type {
+    grid-area: type;
+}
+
+#desc {
+    display: inline-flex;
+    flex-direction: column;
+    grid-area: description;
+}
+
+#description {
+    font-family: inherit;
+    resize: none;
+    min-height: calc(6em + var(--input-no-content-height));
+    max-height: calc(12em + var(--input-no-content-height));
+}
+
+#del {
+    width: 100%;
+    padding: 10px;
+    background-color: rgb(212, 30, 30);
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    grid-area: del;
+}
+#del:hover {
+    background-color: rgb(194, 28, 28);
+}
+
+#edit {
+    grid-area: edit;
+}
+
+hr {
+    border-color: grey;
+    border-width: 1px;
+    border-radius: 2px;
+    border-style: solid;
+}
